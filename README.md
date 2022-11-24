@@ -4,3 +4,4 @@
  
  # Dependencies
  - pyautogui
+ `pip install pyautogui`
