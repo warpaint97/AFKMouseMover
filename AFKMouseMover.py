@@ -39,11 +39,11 @@ if __name__ == '__main__':
 
         time.sleep(1) if not afkMode else time.sleep(updateTime)
         if last_pos == pag.position():
-            counter += 1
+            if not afkMode:
+                counter += 1
         else:
             if counter > 0:
                 print('Mouse movement detected. AFK timer has been reset. Press [Ctrl+C] to quit.')
             counter = 0
             afkMode = False
         last_pos = pag.position()
-        
