@@ -1,5 +1,5 @@
 # AFKMouseMover
-This python program will move your mouse automatically when you are AFK during a game to avoid being kicked.
+This python program will move your mouse automatically when you are AFK during a game to avoid being kicked.\n
 You can customize the config variables within the AFKMouseMover.py script.
 ```
 # config
@@ -9,6 +9,7 @@ speed = 0.5 # time in seconds to reach next mouse position
 screenFraction = 0.3 # move the mouse within the screen fraction from the center. screenFraction must be <= 1 and > 0.
 ```
  
-# Dependencies
+### Dependencies
 - pyautogui
-```pip install pyautogui```
+
+Use `pip install pyautogui` to install the package.
