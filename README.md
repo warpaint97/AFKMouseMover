@@ -2,7 +2,7 @@
 This python program will move your mouse automatically when you are AFK during a game to avoid being kicked.
 
 ### Run
-To run the AFK Mouse Mover, simply type `python AFKMouseMover.py` in command prompt or double click the `run.bat` batch file.
+To run the AFK Mouse Mover, simply type `python AFKMouseMover.py` into the command prompt or double click the `run.bat` batch file.
 If the pyautogui package is not installed you will have to run `pip install pyautogui` in the command prompt first.
 
 ### Control
