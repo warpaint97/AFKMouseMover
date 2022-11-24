@@ -7,8 +7,8 @@ import random
 import time
 
 # config
-timeLimit = 5 # time limit in seconds until AFK Mode kicks in
-updateTime = 0.5 # time between mouse movements during AFK mode
+timeLimit = 10 # time limit in seconds until AFK Mode kicks in
+updateTime = 1 # time between mouse movements during AFK mode
 speed = 0.5 # time in seconds to reach next mouse position
 screenFraction = 0.3 # move the mouse within the screen fraction from the center. screenFraction must be <= 1 and > 0.
 
