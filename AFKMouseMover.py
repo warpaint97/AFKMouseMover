@@ -2,7 +2,7 @@
 # date: 11-24-2022
 # decription: This python code will keep moving your mouse when you are AFK in a game.
 
-import pyautogui as pag
+import pydirectinput as pdi
 import random
 import time
 import keyboard
@@ -10,16 +10,37 @@ import threading
 
 ######################################################################################################################
 # config
-timeLimit = 10 # time limit in seconds until AFK Mode kicks in
+timeLimit = 2 # time limit in seconds until AFK Mode kicks in
 updateTime = 1 # time between mouse movements during AFK mode
-speed = 0.5 # time in seconds to reach next mouse position
+duration = 1 # time in seconds to reach next mouse position
 screenFraction = 0.3 # move the mouse within the screen fraction from the center. screenFraction must be <= 1 and > 0.
 ######################################################################################################################
 
-# threading function
+# interpolate values
+def lerp(origin, target, value):
+    return origin + (target - origin) * value
+
+
+# threading function for key listener
 def keyListener(val):
     while True:
         val[0] = keyboard.read_key()
+
+# threading function for mouse movement
+def moveCursor(origin, target, t):
+    timer = 0.0
+    while timer < t:
+        start_time = time.time()
+        value = timer/t
+        x = int(lerp(origin[0], target[0], value))
+        y = int(lerp(origin[1], target[1], value))
+        pdi.moveTo(x, y)
+        if pdi.position() != (x,y):
+            break
+        elapsed = time.time() - start_time
+        timer += elapsed
+
+
 
 # program
 if __name__ == '__main__':
@@ -31,8 +52,8 @@ if __name__ == '__main__':
 
     # threading for key listener
     keyValue = [None]
-    thread = threading.Thread(target=keyListener, args=(keyValue,), daemon=True)
-    thread.start()
+    listener = threading.Thread(target=keyListener, args=(keyValue,), daemon=True)
+    listener.start()
 
     #main program loop
     print('Running AFK Mouse Mover.')
@@ -44,14 +65,17 @@ if __name__ == '__main__':
             if not afkMode:
                 print('AFK has been detected. Mouse is being moved.')
             afkMode = True
-            x = random.randint((1-scale)*pag.size().width, scale*pag.size().width)
-            y = random.randint((1-scale)*pag.size().height, scale*pag.size().height)
+            x = random.randint((1-scale)*pdi.size()[0], scale*pdi.size()[0])
+            y = random.randint((1-scale)*pdi.size()[1], scale*pdi.size()[1])
 
-            pag.moveTo(x, y, speed)
-            last_pos = pag.position()
+            #pdi.moveTo(x, y, speed)
+            mover_thread = threading.Thread(target=moveCursor, args=((last_pos[0],last_pos[1]),(x,y),duration,))
+            mover_thread.start()
+            mover_thread.join()
+            last_pos = pdi.position()
 
         time.sleep(1) if not afkMode else time.sleep(updateTime)
-        if last_pos == pag.position() and keyValue[0] == None:
+        if last_pos == pdi.position() and keyValue[0] == None:
             if not afkMode:
                 counter += 1
         else:
@@ -60,4 +84,4 @@ if __name__ == '__main__':
             counter = 0
             afkMode = False
             keyValue[0] = None
-        last_pos = pag.position()
+        last_pos = pdi.position()
