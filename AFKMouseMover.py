@@ -5,6 +5,8 @@
 import pyautogui as pag
 import random
 import time
+import keyboard
+import threading
 
 ######################################################################################################################
 # config
@@ -14,6 +16,11 @@ speed = 0.5 # time in seconds to reach next mouse position
 screenFraction = 0.3 # move the mouse within the screen fraction from the center. screenFraction must be <= 1 and > 0.
 ######################################################################################################################
 
+# threading function
+def keyListener(val):
+    while True:
+        val[0] = keyboard.read_key()
+
 # program
 if __name__ == '__main__':
     # internal variables
@@ -22,6 +29,12 @@ if __name__ == '__main__':
     afkMode = False
     scale = screenFraction/2 + 0.5
 
+    # threading for key listener
+    keyValue = [None]
+    thread = threading.Thread(target=keyListener, args=(keyValue,), daemon=True)
+    thread.start()
+
+    #main program loop
     print('Running AFK Mouse Mover.')
     while True:
         if counter > 0 <= timeLimit and not afkMode:
@@ -38,12 +51,13 @@ if __name__ == '__main__':
             last_pos = pag.position()
 
         time.sleep(1) if not afkMode else time.sleep(updateTime)
-        if last_pos == pag.position():
+        if last_pos == pag.position() and keyValue[0] == None:
             if not afkMode:
                 counter += 1
         else:
             if counter > 0:
-                print('Mouse movement detected. AFK timer has been reset. Press [Ctrl+C] to quit.')
+                print('Activity has been detected. AFK timer has been reset. Press [Ctrl+C] to quit.')
             counter = 0
             afkMode = False
+            keyValue[0] = None
         last_pos = pag.position()

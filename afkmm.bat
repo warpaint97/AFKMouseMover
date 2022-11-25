@@ -1,3 +1,3 @@
 @echo off
-python %~dp0AFKMouseMover.py
+py %~dp0AFKMouseMover.py
 pause
