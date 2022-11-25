@@ -10,10 +10,10 @@ import threading
 
 ######################################################################################################################
 # config
-timeLimit = 2 # time limit in seconds until AFK Mode kicks in
-updateTime = 1 # time between mouse movements during AFK mode
-duration = 1 # time in seconds to reach next mouse position
-screenFraction = 0.3 # move the mouse within the screen fraction from the center. screenFraction must be <= 1 and > 0.
+timeLimit = 10 # time limit in seconds until AFK Mode kicks in
+updateTime = 2 # time between mouse movements during AFK mode
+duration = 1.5 # time in seconds to reach next mouse position
+screenFraction = 0.2 # move the mouse within the screen fraction from the center. screenFraction must be <= 1 and > 0.
 ######################################################################################################################
 
 # interpolate values
@@ -26,8 +26,9 @@ def keyListener(val):
     while True:
         val[0] = keyboard.read_key()
 
-# threading function for mouse movement
+# function for mouse movement
 def moveCursor(origin, target, t):
+    global keyValue
     timer = 0.0
     while timer < t:
         start_time = time.time()
@@ -35,7 +36,7 @@ def moveCursor(origin, target, t):
         x = int(lerp(origin[0], target[0], value))
         y = int(lerp(origin[1], target[1], value))
         pdi.moveTo(x, y)
-        if pdi.position() != (x,y):
+        if pdi.position() != (x,y) or keyValue[0] != None:
             break
         elapsed = time.time() - start_time
         timer += elapsed
@@ -48,6 +49,7 @@ if __name__ == '__main__':
     last_pos = None
     counter = 0
     afkMode = False
+    isMoving = False
     scale = screenFraction/2 + 0.5
 
     # threading for key listener
@@ -68,10 +70,7 @@ if __name__ == '__main__':
             x = random.randint((1-scale)*pdi.size()[0], scale*pdi.size()[0])
             y = random.randint((1-scale)*pdi.size()[1], scale*pdi.size()[1])
 
-            #pdi.moveTo(x, y, speed)
-            mover_thread = threading.Thread(target=moveCursor, args=((last_pos[0],last_pos[1]),(x,y),duration,))
-            mover_thread.start()
-            mover_thread.join()
+            moveCursor(pdi.position(), (x,y), duration)
             last_pos = pdi.position()
 
         time.sleep(1) if not afkMode else time.sleep(updateTime)
